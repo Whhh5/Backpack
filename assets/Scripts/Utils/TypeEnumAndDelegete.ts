@@ -1,4 +1,3 @@
-import { IBlood } from "../Interface/Interface";
 
 export enum e_levelStatus{
     stop = 0,//暂停
