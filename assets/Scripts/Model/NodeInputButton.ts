@@ -32,6 +32,14 @@ export class NodeInputButton extends Component {
                         let _tempPos:Vec3 = Vec3.add(new Vec3(),this.node.position,this.node.parent.position);
                         this.icon.setParent(UIManager._instance._tempParent);
                         this.icon.setPosition(_tempPos);
+                        if(this.icon.getComponent(GridIconTemp) != null){
+                            console.log("显示组件");
+                            this.icon.getComponent(GridIconTemp).enabled = true;
+                        }else{
+                            console.log("添加组件");
+                            this.icon.addComponent(GridIconTemp);
+                        }
+                        
                         this._isMove = true;
                     }
                     break;
@@ -74,7 +82,7 @@ export class NodeInputButton extends Component {
                     // console.log(this._tempPos);
                     if(PublicVariable._instance._mouseDownButton != null){
 
-                        this.formAToB(this.icon,PublicVariable._instance._mouseDownButton);
+                        this.exChangePosition(this.icon,PublicVariable._instance._mouseDownButton);
 
                         if(PublicVariable._instance._mouseDownButton != null){
                             PublicVariable._instance._tempParent.getComponent(NodeInputButton)._isMove = false;
@@ -158,33 +166,28 @@ export class NodeInputButton extends Component {
     }
 
     //交换位置
-    formAToB(a:Node,b:Node){
+    exChangePosition(a:Node,b:Node){
         if(a != b){
-            // let tempv3a = Vec3.subtract(new Vec3(),PublicVariable._instance._tempPos,a.position);
-            // let tempv3b = Vec3.subtract(new Vec3(),a.position,PublicVariable._instance._tempPos);
-
-            
             let tempv3a = Vec3.subtract(new Vec3(),a.parent.position,PublicVariable._instance._tempParent.position);
-            // console.log(tempv3a+"    "+PublicVariable._instance._tempParent.position+"    "+a.parent.position+"     "+b.position);
             let tempv3b = Vec3.subtract(new Vec3(),Vec3.subtract(new Vec3(),b.position,a.parent.position),new Vec3(0,250,0));
             b.setParent(a.getParent());
             a.setParent(PublicVariable._instance._tempParent);
             a.position = (tempv3a);
             b.position = (tempv3b);
 
-            console.log(tempv3a+"    "+a.position+"    "+tempv3b+"     "+b.position);
             tween(a)
                 .to(1,{position:new Vec3(0,0,0)},{"onStart":()=>{
-                    a.getParent().getComponent(NodeInputButton).icon = a;
-                }})
+                    a.getParent().getComponent(NodeInputButton).icon = a;},
+                })
                 .union()
                 .repeat(1)
                 .start()
             
             tween(b)
                 .to(1,{position:new Vec3(0,0,0)},{"onStart":()=>{
-                    b.getParent().getComponent(NodeInputButton).icon = b;
-                }})
+                    b.getParent().getComponent(NodeInputButton).icon = b;},
+                    "onComplete":()=>{b.getComponent(GridIconTemp).enabled = false;}
+                })
                 .union()
                 .repeat(1)
                 .start()
@@ -194,25 +197,56 @@ export class NodeInputButton extends Component {
             b.setParent(PublicVariable._instance._tempParent);
             b.setPosition(temp);
             tween(b)
-                .to(1,{position:new Vec3(0,0,0)})
+                .to(1,{position:new Vec3(0,0,0)},{"onComplete":()=>{
+                    b.getComponent(GridIconTemp).enabled = false;
+                }})
                 .union()
                 .repeat(1)
                 .start()
         }
-
-        console.log(a==b);
-
-        // tween(a)
-        //     .to(1,{position:PublicVariable._instance._tempParentPos})
-        //     .union()
-        //     .repeat(1)
-        //     .start()
-            
-        // tween(b)
-        //     .to(1,{position:a.position})
-        //     .union()
-        //     .repeat(1)
-        //     .start()
         
+    }
+}
+
+
+export class GridIconTemp extends Component{
+    start(){
+        this.node.on(Node.EventType.MOUSE_UP,(event:EventMouse)=>{
+            switch(event.getButton()){
+                case 0:
+                    //判断交换位置
+                    if(PublicVariable._instance._mouseDownButton != null){
+
+                        this.exChangePosition(PublicVariable._instance._mouseDownButton);
+
+                        if(PublicVariable._instance._mouseDownButton != null){
+                            PublicVariable._instance._tempParent.getComponent(NodeInputButton)._isMove = false;
+                            PublicVariable._instance._mouseDownButton = null;
+                            PublicVariable._instance._tempParent = null;
+                            PublicVariable._instance._tempPos = Vec3.ZERO;
+                        }
+                    }
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                default:
+                    break;
+            }
+        },this.node);
+    }
+
+    exChangePosition(b:Node){
+            let temp:Vec3 = Vec3.subtract(new Vec3(),Vec3.subtract(new Vec3(),b.position,PublicVariable._instance._tempParent.position),new Vec3(0,250,0))
+            b.setParent(PublicVariable._instance._tempParent);
+            b.setPosition(temp);
+            tween(b)
+                .to(1,{position:new Vec3(0,0,0)},{"onComplete":()=>{
+                    this.enabled = false;
+                }})
+                .union()
+                .repeat(1)
+                .start()
     }
 }
