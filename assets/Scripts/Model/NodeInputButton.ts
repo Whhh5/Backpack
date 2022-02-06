@@ -1,6 +1,7 @@
 
 import { _decorator, Component, Node, EventMouse, Vec3, view, debug, tween, Tween, Sprite, SpriteFrame } from 'cc';
 import { BackpackGoodsInformations } from '../Componts/Controller/BackpackGoodsInformations';
+import { GoodsMenus } from '../Componts/Controller/GoodsMenus';
 import { UIManager } from '../Componts/Singleton/UIManager';
 import { IGoods } from '../Utils/Interfaces';
 import { MouseControler } from '../Utils/MouseControler';
@@ -15,6 +16,7 @@ export class NodeInputButton extends Component {
     _iconSprite:Sprite;
     
 
+    _tempParent:Node = null;
     _speed:number = 0.5;
     _isMove:boolean = false;
     _tempPos:Vec3 = Vec3.ZERO;
@@ -22,6 +24,8 @@ export class NodeInputButton extends Component {
     _gooditemp:IGoods = null;
 
     start(){
+        this._tempParent = this.node.getParent().getParent().getChildByName("TempPParent");
+
         this.node.on(Node.EventType.MOUSE_DOWN,(event:EventMouse)=>{
             /**
              * 1.记录子对象的索引，Transform组件，
@@ -31,13 +35,13 @@ export class NodeInputButton extends Component {
              */
             switch(event.getButton()){
                 case 0:
-                    if(PublicVariable._instance._mouseDownButton == null){
+                    if(PublicVariable._instance._mouseDownButton == null && this._iconSprite.spriteFrame != null){
                         PublicVariable._instance._mouseDownButton = this.icon;
                         PublicVariable._instance._tempPos = this.icon.position;
                         PublicVariable._instance._tempParent = this.icon.getParent();
 
                         let _tempPos:Vec3 = Vec3.add(new Vec3(),this.node.position,this.node.parent.position);
-                        this.icon.setParent(UIManager._instance._tempParent);
+                        this.icon.setParent(this._tempParent);
                         this.icon.setPosition(_tempPos);
                         if(this.icon.getComponent(GridIconTemp) != null){
                             console.log("开启非法拖拽判断组件");
@@ -47,7 +51,6 @@ export class NodeInputButton extends Component {
                             this.icon.addComponent(GridIconTemp);
                             this.icon.getComponent(GridIconTemp).enabled = true;
                         }
-                        
                         this._isMove = true;
                     }
                     break;
@@ -63,19 +66,16 @@ export class NodeInputButton extends Component {
             switch(event.getButton()){
                 case 0:
                     //判断交换位置
-                    // console.log(this._tempPos);
+                    //重置提示信息
+                    UIManager._instance._information.getComponent(BackpackGoodsInformations).setInformationMove(UIManager._instance._information.getComponent(BackpackGoodsInformations),"",false);
                     if(PublicVariable._instance._mouseDownButton != null){
 
                         this.exChangePosition(this.icon,PublicVariable._instance._mouseDownButton);
-
-                        if(PublicVariable._instance._mouseDownButton != null){
-                            PublicVariable._instance._tempParent.getComponent(NodeInputButton)._isMove = false;
-                            PublicVariable._instance._mouseDownButton = null;
-                            PublicVariable._instance._tempParent = null;
-                            PublicVariable._instance._tempPos = Vec3.ZERO;
-                            // console.log("隐藏组件");
-                            // PublicVariable._instance._mouseDownButton.getComponent(GridIconTemp).enabled = false;
-                        }
+                        //重置参数
+                        PublicVariable._instance._tempParent.getComponent(NodeInputButton)._isMove = false;
+                        PublicVariable._instance._mouseDownButton = null;
+                        PublicVariable._instance._tempParent = null;
+                        PublicVariable._instance._tempPos = Vec3.ZERO;
                     }
                     break;
                 case 1:
@@ -99,9 +99,9 @@ export class NodeInputButton extends Component {
                         //显示
                         UIManager._instance._isMove = true;
                         if(this._gooditemp != null){
-                            UIManager._instance._information.getComponent(BackpackGoodsInformations).setInformationMove(UIManager._instance._information.getComponent(BackpackGoodsInformations),this._gooditemp._information,UIManager._instance._isMove);
+                            let infor:string = "装备简介" + "\n" + "名称:  " + this._gooditemp._name + "\n" + "装备参考值:  " + this._gooditemp._relevance + " \n" + this._gooditemp._information;
+                            UIManager._instance._information.getComponent(BackpackGoodsInformations).setInformationMove(UIManager._instance._information.getComponent(BackpackGoodsInformations),infor,UIManager._instance._isMove);
                         }
-                        console.log("进入");
                     }
                     else{
                         //不做反应
@@ -128,7 +128,7 @@ export class NodeInputButton extends Component {
                         //隐藏
                         UIManager._instance._isMove = false;
                         UIManager._instance._information.getComponent(BackpackGoodsInformations).setInformationMove(UIManager._instance._information.getComponent(BackpackGoodsInformations),"",UIManager._instance._isMove);
-                        console.log("隐藏");
+                        
                     }
                     else{
                         //不做反应
@@ -197,7 +197,15 @@ export class NodeInputButton extends Component {
             b.setParent(PublicVariable._instance._tempParent);
             b.setPosition(temp);
             //显示物品菜单
-            UIManager._instance._goodsMenu.show(UIManager._instance._goodsMenu,255);
+            if(PublicVariable._instance._mouseDownButton != null && PublicVariable._instance._mouseDownButton.getChildByName("iconSprite").getComponent(Sprite).spriteFrame != null){
+                UIManager._instance._goodsMenu.show(UIManager._instance._goodsMenu,255);
+                if(PublicVariable._instance._mouseDownButton != null){
+                    UIManager._instance._goodsMenu._tempGoodsItem = PublicVariable._instance._mouseDownButton.getParent().getComponent(NodeInputButton)._gooditemp;
+                    UIManager._instance._goodsMenu._tempImage = PublicVariable._instance._mouseDownButton;
+                    UIManager._instance._goodsMenu._tempImageParent = PublicVariable._instance._mouseDownButton.getParent();
+                }
+            }
+            
             tween(b)
                 .to(1,{position:new Vec3(0,0,0)},{"onStart":()=>{
                     b.getComponent(GridIconTemp).enabled = false;console.log(b.getComponent(GridIconTemp).enabled+"    "+"关闭非法拖拽判断");

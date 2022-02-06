@@ -13,12 +13,22 @@ export class WordLinkBackpack extends Component {
     addGoods(){
         let goods:IGoods = LivingExample_Items._instance._sword;
 
+        // switch(goods._classify){
+        //     case e_goodsClassify.combat:
+
+        //         break;
+        //     case e_goodsClassify.consumables:
+        //         break;
+        //     default:
+        //         break;
+        // }
+
         let backpack:Node = UIManager._instance._dic[goods._classify];
         for(let i=0;i<backpack.getChildByName("Layout").children.length;i++){
             if(backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._iconSprite.spriteFrame == null){
                 backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._iconSprite.spriteFrame = goods._icon;
                 backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._gooditemp = goods;
-                console.log("获取装备：" + goods._name);
+                console.log("获取装备:" + goods._name);
                 return;
             }
             console.log("当前第" +"   "+ i + " 个装备栏已经有装备");
@@ -29,4 +39,35 @@ export class WordLinkBackpack extends Component {
     putInBackpack(){
         
     }
+
+    testAddGoods1(){
+        let goods:IGoods = LivingExample_Items._instance._Shield;
+        let backpack:Node = UIManager._instance._dic[goods._classify];
+        for(let i=0;i<backpack.getChildByName("Layout").children.length;i++){
+            if(backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._iconSprite.spriteFrame == null){
+                backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._iconSprite.spriteFrame = goods._icon;
+                backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._gooditemp = goods;
+                console.log("获取装备:" + goods._name);
+                return;
+            }
+            console.log("当前第" +"   "+ i + " 个装备栏已经有装备");
+        }
+        console.log("装备栏已满");
+    }
+    testAddGoods2(){
+        let goods:IGoods = LivingExample_Items._instance._potion;
+        let backpack:Node = UIManager._instance._dic[goods._classify];
+        for(let i=0;i<backpack.getChildByName("Layout").children.length;i++){
+            if(backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._iconSprite.spriteFrame == null){
+                backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._iconSprite.spriteFrame = goods._icon;
+                backpack.getChildByName("Layout").children[i].getComponent(NodeInputButton)._gooditemp = goods;
+                console.log("获取装备:" + goods._name);
+                return;
+            }
+            console.log("当前第" +"   "+ i + " 个装备栏已经有装备");
+        }
+        console.log("装备栏已满");
+    }
+
+    
 }

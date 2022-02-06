@@ -11,7 +11,7 @@ export class Test extends Component {
     static v1:Vec3 = Vec3.ZERO;
     static v2:Vec3 = Vec3.ONE;
     onload(){
-        console.log(UIManager._instance._tempParent.name);
+        // console.log(UIManager._instance._tempParent.name);
     }
 
     t:number = 0;
@@ -27,7 +27,7 @@ export class Test extends Component {
         input.on(Input.EventType.KEY_DOWN,(event:EventKeyboard)=>{
             switch(event.keyCode){
                 case KeyCode.DIGIT_1:
-                    UIManager._instance._goodsMenu.show(UIManager._instance._goodsMenu,255);
+                    UIManager._instance._bloodValue++;
                     break;
                 case KeyCode.DIGIT_2:
                     UIManager._instance._goodsMenu.heid(UIManager._instance._goodsMenu,0);
