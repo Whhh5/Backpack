@@ -14,6 +14,23 @@ export enum e_playerStatus{
     attack,
 }
 
+export enum e_goodsClassify{
+    /**战斗用品 */
+    combat = 0,
+    /**消耗用品 */
+    consumables,
+    else,
+}
+
+export enum e_goods{
+    /**武器 */
+    weapon = 0,
+    /**盾 */
+    shield,
+    /**药瓶 */
+    potion,
+    else,
+}
 
 
 
