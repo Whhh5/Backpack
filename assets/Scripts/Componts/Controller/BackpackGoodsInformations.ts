@@ -15,7 +15,7 @@ export class BackpackGoodsInformations extends Component {
     _speed:number = 0;
 
     start(){
-        
+        this.setInformationMove(this,"",false);
     }
 
     update (deltaTime: number) {

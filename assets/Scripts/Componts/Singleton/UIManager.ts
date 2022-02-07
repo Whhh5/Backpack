@@ -19,14 +19,13 @@ export class UIManager extends Component {
     @property({group:{name:"背包列表",id:"1",displayOrder:1},type:Array(dic),displayOrder:1,visible:true})
     private _backList:Array<dic> = new Array<dic>();
     _dic:Map<e_goodsClassify,Node> = new Map<e_goodsClassify,Node>();
-    // @property({group:{name:"背包列表",id:"1",displayOrder:2},type:Node,visible:true})
-    // _tempParent:Node = null;
+    
     @property({group:{name:"背包装备提示信息",id:"1",displayOrder:1},displayOrder:2,type:Node,visible:true})
     _information:Node;
-    // @property({group:{name:"背包装备提示信息",id:"1",displayOrder:2},displayOrder:2,type:Node,visible:true})
-    // _tempParent:Node = null;
     @property({group:{name:"背包装备提示信息",id:"1",displayOrder:3},displayOrder:2,visible:true})
     private t_isMove:boolean = false;
+
+
     set _isMove(value:boolean){
         UIManager._instance.t_isMove = value;
     }
@@ -41,12 +40,22 @@ export class UIManager extends Component {
     private t_damageValue:number = 0;
     @property({group:{name:"玩家属性",id:"2",displayOrder:3},displayOrder:1,visible:true})
     private t_defenseValue:number = 0;
+    @property({group:{name:"玩家属性",id:"2",displayOrder:4},displayOrder:1,visible:true})
+    private t_money:number = 0;
     @property({group:{name:"相关UI组件",id:"2",displayOrder:1},displayOrder:2,type:Label,visible:true})
     private _bloodLabel:Label;
     @property({group:{name:"相关UI组件",id:"2",displayOrder:2},displayOrder:2,type:Label,visible:true})
     private _damageLabel:Label;
     @property({group:{name:"相关UI组件",id:"2",displayOrder:3},displayOrder:2,type:Label,visible:true})
     private _defenseLabel:Label;
+    @property({group:{name:"相关UI组件",id:"2",displayOrder:4},displayOrder:2,type:Label,visible:true})
+    private _moneyLabel:Label;
+
+
+    @property({group:{name:"物品菜单",id:"3",displayOrder:1},displayOrder:1,type:GoodsMenus,visible:true})
+    _goodsMenu:GoodsMenus;
+    @property({group:{name:"UI提示框",id:"3",displayOrder:1},displayOrder:2,type:Node,visible:true})
+    _hint:Node = null;
     
     get _bloodValue(){
         return UIManager._instance.t_bloodValue;
@@ -118,12 +127,34 @@ export class UIManager extends Component {
             .start()
     }
 
+    get _money(){
+        return UIManager._instance.t_money;
+    }
+    set _money(value:number){
+        let tempValue:Vec2 = new Vec2(UIManager._instance.t_money,0);
+        UIManager._instance.t_money = value;
+        if(UIManager._instance.t_money >= 1000){
+            UIManager._instance.t_money = 1000;
+        }else if(UIManager._instance.t_money <= 0){
+            UIManager._instance.t_money  = 0;
+        }
+        tween(tempValue)
+            .delay(0.1)
+            .to(1,new Vec3(UIManager._instance.t_money,0),{"onUpdate":(target:Vec3,ratio:number)=>{
+                UIManager._instance._moneyLabel.string = tempValue.x.toFixed(3);
+            },"onComplete":()=>{
+                UIManager._instance._moneyLabel.string = tempValue.x.toFixed(0);
+            }})
+            .union()
+            .repeat(1)
+            .start()
+    }
 
 
 
 
-    @property({group:{name:"物品菜单",id:"3",displayOrder:1},displayOrder:1,type:GoodsMenus,visible:true})
-    _goodsMenu:GoodsMenus;
+
+    
     
 
     initialization(thisTs:UIManager){

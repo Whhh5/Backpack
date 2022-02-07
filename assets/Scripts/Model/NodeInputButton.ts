@@ -1,7 +1,6 @@
 
 import { _decorator, Component, Node, EventMouse, Vec3, view, debug, tween, Tween, Sprite, SpriteFrame } from 'cc';
 import { BackpackGoodsInformations } from '../Componts/Controller/BackpackGoodsInformations';
-import { GoodsMenus } from '../Componts/Controller/GoodsMenus';
 import { UIManager } from '../Componts/Singleton/UIManager';
 import { IGoods } from '../Utils/Interfaces';
 import { MouseControler } from '../Utils/MouseControler';
@@ -99,7 +98,7 @@ export class NodeInputButton extends Component {
                         //显示
                         UIManager._instance._isMove = true;
                         if(this._gooditemp != null){
-                            let infor:string = "装备简介" + "\n" + "名称:  " + this._gooditemp._name + "\n" + "装备参考值:  " + this._gooditemp._relevance + " \n" + this._gooditemp._information;
+                            let infor:string = "装备简介" + "\n" + "名称:  " + this._gooditemp._name + "\n" + "装备参考值:  " + this._gooditemp._relevance + " \n" + "出售价值:  " + this._gooditemp._sellValue + " \n" + "买入价值:  " + this._gooditemp._buyValue + " \n" + this._gooditemp._information;
                             UIManager._instance._information.getComponent(BackpackGoodsInformations).setInformationMove(UIManager._instance._information.getComponent(BackpackGoodsInformations),infor,UIManager._instance._isMove);
                         }
                     }
